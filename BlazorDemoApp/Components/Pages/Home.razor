@@ -1,0 +1,23 @@
+﻿@page "/"
+@inject IConfiguration Config
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, all you people, how are you you today?!</h1>
+
+
+
+
+<p class="h4">
+    Default Connection String: @defaultConnection
+
+</p>
+
+@code {
+    private string? defaultConnection = "";
+
+    protected override void OnInitialized()
+    {
+        defaultConnection = Config.GetConnectionString("Default") ?? "Unknown";
+    }
+}
