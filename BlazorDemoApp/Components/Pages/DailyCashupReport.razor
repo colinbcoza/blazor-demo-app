@@ -1,0 +1,257 @@
+﻿@page "/daily-cashier-report"
+@using System.ComponentModel.DataAnnotations
+@inject IConfiguration Config
+
+
+<div class="container border" style="padding:20px">
+    
+    <div class="mb-3 row">        
+        <h3>Daily Cashup Report</h3>
+    </div>
+
+    <form method="post">
+
+        <div class="mb-3 row">
+            <div class="col-2">
+                <label>Date</label>
+            </div>
+            <div class="col-5">
+                <input type="text" asp-for="RegisterViewModel.Email" class="form-control" />
+                <span class="text-danger" asp-validation-for="RegisterViewModel.Email"></span>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-2">
+                <label asp-for="RegisterViewModel.Password"></label>
+            </div>
+            <div class="col-5">
+                <input type="password" asp-for="RegisterViewModel.Password" class="form-control" />
+                <span class="text-danger" asp-validation-for="RegisterViewModel.Password"></span>
+            </div>
+        </div>
+        <div class="text-danger" asp-validation-summary="All"></div>
+        <div class="mb-3 row">
+            <div class="col-2">
+                <input type="submit" class="btn-primary" value="Register" />
+            </div>
+            <div class="col-5">
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@code {
+
+    public CashierShiftReport Model { get; set; } = new CashierShiftReport();
+    private User loggedInUser = new User();
+
+    //intialize the component
+    public void Initialize()
+    {
+        loggedInUser = Users.FirstOrDefault(item => item.UserName == "Colin") ?? new User();
+        Model.Cashier = loggedInUser;
+
+        Model.StaffShifts = new List<StaffShift>
+        {
+            new StaffShift
+            {
+                SalesPerson = loggedInUser,
+                Role = UserRoles.FirstOrDefault(item => item.Name == "Salesperson") ?? new UserRole(),
+                StaffShiftPays = new List<StaffShiftPay>
+                {
+                    new StaffShiftPay
+                    {
+                        Turnover = 0,
+                        Payout = 0,
+                        Rule = PayOutRules.FirstOrDefault(item => item.Description == "Salary") ?? new PayOutRule()
+                    },
+                    new StaffShiftPay
+                    {
+                        Turnover = 0,
+                        Payout = 0,
+                        Rule = PayOutRules.FirstOrDefault(item => item.Description == "Salesperson Sales") ?? new PayOutRule()
+                    }
+                }
+            },
+            new StaffShift
+            {
+                SalesPerson = Users.FirstOrDefault(item => item.UserName == "Annee") ?? new User(),
+                Role = UserRoles.FirstOrDefault(item => item.Name == "Salesperson") ?? new UserRole(),
+                StaffShiftPays = new List<StaffShiftPay>
+                {
+                    new StaffShiftPay
+                    {
+                        Turnover = 0,
+                        Payout = 0,
+                        Rule = PayOutRules.FirstOrDefault(item => item.Description == "Readings") ?? new PayOutRule()
+                    },
+                    new StaffShiftPay
+                    {
+                        Turnover = 0,
+                        Payout = 0,
+                        Rule = PayOutRules.FirstOrDefault(item => item.Description == "Reader Sales") ?? new PayOutRule()
+                    }
+                }
+            }
+        };
+    }
+
+
+
+    public class CashierShiftReport
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public User Cashier { get; set; } = new User();
+        public DateTime ShiftStart { get; set; } = DateTime.Now;
+        public DateTime ShiftEnd { get; set; } = DateTime.Now;
+        public decimal TotalCash { get; set; } = 0;
+        public decimal TotalCard { get; set; } = 0;
+        public decimal TotalEft { get; set; } = 0;
+        public List<StaffShift> StaffShifts { get; set; } = new List<StaffShift>();
+    }
+
+    public class StaffShift
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();  
+        public User SalesPerson { get; set; } = new User();
+        public UserRole Role { get; set; } = new UserRole();
+        public decimal TotalPayout { get; set; } = 0;
+        public List<StaffShiftPay> StaffShiftPays { get; set; } = new List<StaffShiftPay>();
+    }
+
+    public class StaffShiftPay
+    {
+        public decimal Turnover { get; set; } = 0;
+        public PayOutRule Rule { get; set; } = new PayOutRule();
+        public decimal Payout { get; set; } = 0;
+    }
+
+    public class PayOutRule
+    {
+        public string Description { get; set; } = string.Empty;
+        public decimal Percentage { get; set; } = 0;
+        public decimal PayThreshhold { get; set; } = 0;
+        public decimal PayCap { get; set; } = 0;    
+        public decimal RuleAmount { get; set; } = 0;
+    }
+
+    public class User
+    {
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public string UserName { get; set; } = string.Empty;
+        public List<UserRole> Roles { get; set; } = new List<UserRole>();
+    }
+
+    public class UserRole
+    {
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public List<UserRole> UserRoles = new List<UserRole>
+    {
+        new UserRole { Name = "Reader" },
+        new UserRole { Name = "Salesperson" },
+    };
+
+    public List<User> Users = new List<User>
+    {
+        new User
+        {
+            UserName = "Colin",
+            Roles = new List<UserRole>
+            {
+                new UserRole { Name = "Salesperson" }
+            }
+        },
+        new User
+        {
+            UserName = "Annee",
+            Roles = new List<UserRole>
+            {
+                new UserRole { Name = "Salesperson" },
+                new UserRole { Name = "Reader" },
+            }
+        },
+        new User
+        {
+            UserName = "Shanaaz",
+            Roles = new List<UserRole>
+            {
+                new UserRole { Name = "Reader" }
+            }
+        },
+        new User
+        {
+            UserName = "Roli",
+            Roles = new List<UserRole>
+            {
+                new UserRole { Name = "Reader" },
+            }
+        },
+        new User
+        {
+            UserName = "Margie",
+            Roles = new List<UserRole>
+            {
+                new UserRole { Name = "Reader" },
+            }
+        },
+        new User
+        {
+            UserName = "Michaela",
+            Roles = new List<UserRole>
+            {
+                new UserRole { Name = "Salesperson" }
+            }
+        },
+        new User
+        {
+            UserName = "Paula",
+            Roles = new List<UserRole>
+            {
+                new UserRole { Name = "Salesperson" }
+            }
+        }
+
+    };
+
+    public List<PayOutRule> PayOutRules = new List<PayOutRule>
+    {
+        new PayOutRule
+        {
+            Description = "Salesperson Sales",
+            Percentage = 0.10m,
+            PayThreshhold = 2000,
+            PayCap = -1,
+            RuleAmount = 0
+        }, 
+        new PayOutRule
+        {
+            Description = "Reader Sales",
+            Percentage = 0.10m,
+            PayThreshhold = 0,
+            PayCap = -1,
+            RuleAmount = 0
+        }, 
+        new PayOutRule
+        {
+            Description = "Readings",
+            Percentage = 0.4m,
+            PayThreshhold = 0,
+            PayCap = -1,
+            RuleAmount = 0
+        }, 
+        new PayOutRule
+        {
+            Description = "Salary",
+            Percentage = 0.0m,
+            PayThreshhold = 0,
+            PayCap = -1,
+            RuleAmount = 500
+        }
+    };
+
+}
