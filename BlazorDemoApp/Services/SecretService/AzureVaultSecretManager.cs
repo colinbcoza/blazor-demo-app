@@ -11,7 +11,7 @@ namespace BlazorDemoApp.Services.SecretService
 
         public AzureVaultSecretManager(IConfiguration configuration) 
         {
-            string vaultUrl = configuration["KeyVaultUrl"] ?? string.Empty;
+            string vaultUrl = configuration["AzureVaultUri"] ?? string.Empty;
 
             // Authenticate to Azure using the default credentials
             var credential = new DefaultAzureCredential();
