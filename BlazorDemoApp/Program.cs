@@ -1,5 +1,6 @@
 using BlazorDemoApp.Components;
 using BlazorDemoApp.Services;
+using BlazorDemoApp.Services.SecretService;
 using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,12 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+var secretManager = new AzureVaultSecretManager(builder.Configuration);
+builder.Services.AddSingleton<ISecretManager>(secretManager);
 builder.Services.AddSingleton<SalesTerminalService>();
 builder.Services.AddSyncfusionBlazor();
 
 
 var app = builder.Build();
 
+//Register Syncfusion license
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(secretManager.GetSecret("syncfusion-licence-key"));
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
