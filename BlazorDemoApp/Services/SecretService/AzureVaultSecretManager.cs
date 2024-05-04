@@ -15,6 +15,7 @@ namespace BlazorDemoApp.Services.SecretService
 
             // Authenticate to Azure using the default credentials
             var credential = new DefaultAzureCredential();
+
             // Create a new Key Vault client
             _secretClient = new SecretClient(new Uri(vaultUrl), credential);
 

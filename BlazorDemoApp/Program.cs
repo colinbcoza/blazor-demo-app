@@ -17,8 +17,7 @@ builder.Services.AddSyncfusionBlazor();
 
 var app = builder.Build();
 
-//Register Syncfusion license
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(secretManager.GetSecret("syncfusion-licence-key"));
+app.RegisterSyncfusionLicense();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -37,3 +36,5 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+
